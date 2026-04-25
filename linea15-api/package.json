@@ -1,0 +1,10 @@
+{
+  "name": "linea15-api",
+  "version": "3.0.0",
+  "description": "Línea 1.5 - Backend API for Risk Matrix Management",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0"
+  }
+}
