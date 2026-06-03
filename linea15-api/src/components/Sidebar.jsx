@@ -16,9 +16,8 @@ const ALL_NAV = [
 ];
 
 const ALL_ADMIN = [
-  { to:'/logs',     label:'Auditoría',  module:'logs',  icon:'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8' },
-  { to:'/users',    label:'Usuarios',   module:'users', icon:'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75' },
-  { to:'/template', label:'Plantilla',  module:'users', icon:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M12 12v4M10 14h4' },
+  { to:'/logs',  label:'Auditoría', module:'logs',  icon:'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8' },
+  { to:'/users', label:'Usuarios',  module:'users', icon:'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75' },
 ];
 
 export default function Sidebar({ open, onClose }) {
@@ -35,11 +34,13 @@ export default function Sidebar({ open, onClose }) {
     analista: 'Analista', auditor: 'Auditor', viewer: 'Solo lectura',
   }[user?.role] || user?.role;
 
+  // Filtrar nav items según permisos del usuario
   const visibleNav   = ALL_NAV.filter(item => canSeeModule(user, item.module));
   const visibleAdmin = ALL_ADMIN.filter(item => canSeeModule(user, item.module));
 
   return (
     <aside className={`sidebar ${open ? 'open' : ''}`}>
+      {/* Logo */}
       <div className="sidebar-logo">
         <h1>
           <svg width="18" height="18" viewBox="0 0 48 48" fill="none" style={{flexShrink:0}}>
@@ -51,6 +52,7 @@ export default function Sidebar({ open, onClose }) {
         <span>Gestión de Riesgos TI</span>
       </div>
 
+      {/* Navegación filtrada */}
       <nav className="sidebar-nav">
         {visibleNav.length > 0 && (
           <div className="nav-section">
@@ -81,6 +83,7 @@ export default function Sidebar({ open, onClose }) {
         )}
       </nav>
 
+      {/* Footer usuario */}
       <div className="sidebar-footer">
         <div className="user-badge">
           <div className="user-avatar">{initials}</div>

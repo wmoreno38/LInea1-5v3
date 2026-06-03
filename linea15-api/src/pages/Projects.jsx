@@ -2,15 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projects as api } from '../api/client.js';
 import { DEFAULT_CONTROLS } from '../data/defaultControls.js';
-
-/* Lee la plantilla activa: personalizada (localStorage) o por defecto */
-function getActiveTemplate() {
-  try {
-    const raw = localStorage.getItem('l15_control_template');
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return DEFAULT_CONTROLS;
-}
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 export default function Projects() {
@@ -38,7 +29,7 @@ export default function Projects() {
     if (!form.name.trim()) return setError('El nombre es requerido');
     setSaving(true); setError('');
     try {
-      await api.create({ ...form, controls: getActiveTemplate() });
+      await api.create({ ...form, controls: DEFAULT_CONTROLS });
       setModal(false); setForm({ name: '', publishDate: '', responsible: '' });
       load();
     } catch (err) {
