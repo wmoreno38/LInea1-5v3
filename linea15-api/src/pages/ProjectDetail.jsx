@@ -37,6 +37,54 @@ function validateFinalize(controls, evs) {
   return null;
 }
 
+// ── MODAL GENÉRICO DE TEXTO COMPLETO ─────────────────────────────
+function TextModal({ title, content, onClose }) {
+  if (!content) return null;
+  return (
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal modal-lg">
+        <div className="modal-header">
+          <span className="modal-title" style={{color:'var(--orange)',fontFamily:'var(--mono)',fontWeight:700}}>{title}</span>
+          <button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-body">
+          <p style={{fontSize:'.9rem',lineHeight:1.7,whiteSpace:'pre-line',color:'var(--text)'}}>{content}</p>
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-secondary" onClick={onClose}>Cerrar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── CELDA DE TEXTO TRUNCADO CON CLIC PARA VER COMPLETO ───────────
+function TruncatedCell({ code, label, text, maxLen = 140 }) {
+  const [open, setOpen] = useState(false);
+  if (!text) return <div style={{fontSize:'.8rem',color:'var(--text-muted)',fontStyle:'italic'}}>—</div>;
+  const isTruncated = text.length > maxLen;
+  return (
+    <>
+      <div
+        style={{fontSize:'.8rem',lineHeight:1.4,whiteSpace:'pre-line',cursor:isTruncated?'pointer':'default'}}
+        title={isTruncated?'Clic para ver completo':''}
+        onClick={()=>isTruncated&&setOpen(true)}
+      >
+        {isTruncated ? text.substring(0, maxLen) + '…' : text}
+        {isTruncated && (
+          <span style={{
+            display:'inline-block', marginLeft:6, fontSize:'.68rem', color:'var(--orange)',
+            fontWeight:700, cursor:'pointer', textDecoration:'underline'
+          }}>
+            ver más
+          </span>
+        )}
+      </div>
+      {open && <TextModal title={`${code} — ${label}`} content={text} onClose={()=>setOpen(false)}/>}
+    </>
+  );
+}
+
 function ComplianceInput({ ctrl, onSave, readOnly }) {
   const [value,setValue]=useState(ctrl.compliance||'');
   const [status,setStatus]=useState('idle');
@@ -322,8 +370,14 @@ export default function ProjectDetail() {
                     const evc=evs.filter(e=>e.controlId===c.id).length, eap=evs.filter(e=>e.controlId===c.id&&e.status==='aprobada').length;
                     return(<tr key={c.id} style={{background:c.compliance?.trim()?'rgba(34,197,94,.03)':'transparent'}}>
                       <td><span className="chip" style={{fontFamily:'var(--mono)',fontWeight:700,color:'var(--orange)'}}>{c.code}</span></td>
-                      <td style={{maxWidth:190}}><div style={{fontSize:'.8rem',fontWeight:600}}>{c.causaBase}</div>{c.causasAsociadas&&<div style={{fontSize:'.7rem',color:'var(--text-muted)',marginTop:2,lineHeight:1.3,whiteSpace:'pre-line'}}>{c.causasAsociadas.substring(0,100)}{c.causasAsociadas.length>100?'…':''}</div>}</td>
-                      <td style={{maxWidth:200}}><div style={{fontSize:'.8rem',lineHeight:1.4,whiteSpace:'pre-line'}}>{c.controlBase?.substring(0,140)}{c.controlBase?.length>140?'…':''}</div><NormBox norm={c.normatividad}/></td>
+                      <td style={{maxWidth:190}}>
+                        <TruncatedCell code={c.code} label="Causa Base" text={c.causaBase} maxLen={80}/>
+                        {c.causasAsociadas&&<TruncatedCell code={c.code} label="Causas Asociadas" text={c.causasAsociadas} maxLen={60}/>}
+                      </td>
+                      <td style={{maxWidth:200}}>
+                        <TruncatedCell code={c.code} label="Control Base" text={c.controlBase} maxLen={120}/>
+                        <NormBox norm={c.normatividad}/>
+                      </td>
                       <td><span className={`badge ${RISK_COLORS[c.riNiv]||'badge-gray'}`}>{c.riNiv}</span></td>
                       <td><span className={`badge ${RISK_COLORS[c.rrNiv]||'badge-gray'}`}>{c.rrNiv}</span></td>
                       <td style={{minWidth:220}}><ComplianceInput ctrl={c} onSave={saveCompliance} readOnly={!canFill}/></td>

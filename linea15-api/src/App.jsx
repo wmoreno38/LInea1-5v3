@@ -11,6 +11,7 @@ import Reports from './pages/Reports.jsx';
 import Logs from './pages/Logs.jsx';
 import Archive from './pages/Archive.jsx';
 import Users from './pages/Users.jsx';
+import ControlTemplate from './pages/ControlTemplate.jsx';
 
 export default function App() {
   return (
@@ -44,6 +45,14 @@ export default function App() {
               element={
                 <PrivateRoute adminOnly>
                   <Users />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/template"
+              element={
+                <PrivateRoute adminOnly>
+                  <ControlTemplate />
                 </PrivateRoute>
               }
             />
